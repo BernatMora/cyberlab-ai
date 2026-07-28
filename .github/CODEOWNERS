@@ -1,0 +1,18 @@
+# CODEOWNERS — revisió obligatòria per ruta
+# Aquest projecte és personal, però vull deixar constància
+# que la doc i els scripts tenen un "owner" reconegut per si un dia
+# col·laborem algú més.
+
+# Propietari per defecte: tot el repo
+*       @BernatMora
+
+# Documentació
+/docs/  @BernatMora
+/ADR/   @BernatMora
+
+# Configuracions sensibles (placeholders)
+/docker/        @BernatMora
+/network/       @BernatMora
+/virtual-machines/  @BernatMora
+/hermes/        @BernatMora
+/secrets-templates/ @BernatMora
