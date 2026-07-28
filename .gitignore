@@ -1,0 +1,213 @@
+# ============================================================================
+# Bernat CyberLab AI — .gitignore estricte
+# Objectiu: zero secrets, zero dades reals, zero binaris pesats al repo.
+# ============================================================================
+
+# --- Secrets i credencials (MAI al Git) -------------------------------------
+.env
+.env.*
+!.env.example
+*.env
+*.env.*
+!*.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+*.kubeconfig
+.kube/
+.secrets/
+secrets/
+secrets.local/
+secrets.yaml
+secrets.yml
+secrets.json
+secrets.toml
+config.local.*
+*.local
+!.env.local.example
+*credentials*
+*credentials.json
+*credentials.yaml
+*credentials.yml
+keystore.*
+keyring.*
+*.gpg
+*.age
+**/vault.*
+
+# --- KeePass i gestors de contrasenyes --------------------------------------
+*.kdbx
+*.kdb
+*.keypass*
+
+# --- Tailscale --------------------------------------------------------------
+tailscale/
+tailscaled/
+*.tskey
+tskey-*
+
+# --- SSH --------------------------------------------------------------------
+.ssh/
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+known_hosts
+authorized_keys
+
+# --- Configuracions específiques amb valors reals ---------------------------
+# Plantilles SÍ que es versionen; els valors reals NO
+**/secrets.yaml
+**/secrets.yml
+**/secrets.json
+**/secrets.toml
+# Excepcions explícites (les .example sí que pugen)
+!**/*.example
+!**/*.example.*
+!**/secrets-templates/
+
+# --- Discos de màquines virtuals --------------------------------------------
+*.vdi
+*.vmdk
+*.vhd
+*.vhdx
+*.qcow2
+*.qcow
+*.img
+*.ova
+*.ovf
+*.vmem
+*.vmsn
+*.vmsd
+*.nvram
+*.bios
+*.vmx
+*.vmxf
+*.log
+
+# --- Snapshots i estats de Hyper-V / VirtualBox -----------------------------
+**/VirtualBox VMs/
+**/Hyper-V/
+**/vmware/
+**/.vagrant/
+
+# --- Contenidors i volums Docker --------------------------------------------
+docker/volumes/
+**/docker-data/
+**/postgres-data/
+**/mongo-data/
+**/redis-data/
+**/elastic-data/
+**/wazuh-data/
+**/grafana-data/
+**/prometheus-data/
+*.tar
+*.tar.gz
+*.tgz
+docker-compose.override.yml
+docker-compose.override.yaml
+.dockerignore-notrack
+
+# --- Captures de xarxa i PCAP -----------------------------------------------
+*.pcap
+*.pcapng
+*.cap
+*.dmp
+*.mem
+*.raw
+*.bin
+
+# --- Logs -------------------------------------------------------------------
+*.log
+*.log.*
+logs/
+**/logs/
+**/*.log
+!**/logs/.gitkeep
+!*.example.log
+
+# --- Captures de pantalla (poden contenir info sensible) --------------------
+*.png
+!docs/**/*.png
+!architecture/**/*.png
+!README.md
+!docs/**/*.svg
+!architecture/**/*.svg
+*.jpg
+*.jpeg
+!docs/**/*.jpg
+!architecture/**/*.jpg
+*.gif
+*.webp
+
+# --- Models d'IA (grans, no al Git) -----------------------------------------
+*.gguf
+*.ggml
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.onnx
+**/ollama/models/
+**/models/
+
+# --- Builds i artefactes ----------------------------------------------------
+target/
+build/
+dist/
+out/
+*.o
+*.so
+*.dll
+*.dylib
+*.exe
+*.app
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Backups ----------------------------------------------------------------
+backups/
+!**/.gitkeep
+*.bak
+*.backup
+*.old
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Directori _local (valors reals, MAI al Git) ----------------------------
+_local/
+!**/_local/.gitkeep
+!**/_local/README.md
+
+# --- Dades d'AD i de laboratori ---------------------------------------------
+**/ntds.dit
+**/SYSTEM
+**/SAM
+**/SECURITY
+**/secretsdump*
+
+# --- OS junk ----------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+.Trash-*/
+
+# --- Fitxers grans amb Git LFS (si s'activés) -------------------------------
+# Descomentar si vols usar LFS
+# *.pcap filter=lfs diff=lfs merge=lfs -text
+# *.vhd* filter=lfs diff=lfs merge=lfs -text
+# *.qcow2 filter=lfs diff=lfs merge=lfs -text

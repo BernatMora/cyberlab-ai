@@ -1,0 +1,62 @@
+# ============================================================================
+# Bernat CyberLab AI — .gitattributes
+# Normalitza finals de línia i marca fitxers binaris per a tothom.
+# ============================================================================
+
+* text=auto eol=lf
+
+# Scripts: LF sempre
+*.sh          text eol=lf
+*.bash        text eol=lf
+*.py          text eol=lf
+*.js          text eol=lf
+*.ts          text eol=lf
+*.json        text eol=lf
+*.yml         text eol=lf
+*.yaml        text eol=lf
+*.toml        text eol=lf
+
+# Windows: CRLF per compatibilitat
+*.bat         text eol=crlf
+*.cmd         text eol=crlf
+*.ps1         text eol=crlf
+
+# Documentació: LF
+*.md          text eol=lf
+*.txt         text eol=lf
+*.adoc        text eol=lf
+LICENSE*      text eol=lf
+
+# Plantilles: LF
+*.example     text eol=lf
+*.example.*   text eol=lf
+
+# Binaris
+*.png         binary
+*.jpg         binary
+*.jpeg        binary
+*.gif         binary
+*.webp        binary
+*.svg         text eol=lf
+*.pdf         binary
+*.zip         binary
+*.tar         binary
+*.gz          binary
+*.7z          binary
+*.iso         binary
+*.vhd*        binary
+*.vhdx        binary
+*.qcow2       binary
+*.vdi         binary
+*.vmdk        binary
+*.pcap        binary
+*.pcapng      binary
+*.gguf        binary
+*.ggml        binary
+*.bin         binary
+*.exe         binary
+*.dll         binary
+
+# Exporta diffs nets per aquests tipus
+Dockerfile    text eol=lf
+.dockerignore text eol=lf
