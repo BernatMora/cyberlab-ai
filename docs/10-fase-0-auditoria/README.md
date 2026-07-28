@@ -85,6 +85,18 @@ ip route | grep default
 nslookup google.com
 ```
 
+## 1.bis Ordres per copiar-enganxar
+
+Totes les **ordres individuals, organitzades per dispositiu** i llestes per copiar-enganxar estan a:
+[`ordinances.md`](ordinances.md).
+
+Si vols el mode "tot d'una", pots fer servir els scripts:
+```bash
+bash scripts/audit/audit-windows.sh /tmp/out.txt   # PC
+bash scripts/audit/audit-mac.sh /tmp/out.txt       # Mac
+bash scripts/audit/audit-rpi.sh /tmp/out.txt       # RPi
+```
+
 ## 2. Llista de comprovació
 
 Marca cada casella quan estigui validada:
