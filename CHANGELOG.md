@@ -7,6 +7,17 @@ Adoptem el format de [Keep a Changelog](https://keepachangelog.com/) i
 ## [Unreleased]
 
 ### Afegit
+- `docs/10-fase-0-auditoria/ordinances.md` amb totes les ordres d'auditoria organitzades per dispositiu i llestes per copiar-enganxar, més plantilla de resum anonimitzat per compartir amb Hermes.
+
+## [v0.0.1] - 2026-07-28
+
+### Afegit
+- CODEOWNERS i plantilles d'issues/PR al `.github/`.
+- Branca `main` protegida (PR required, no force-push).
+
+## [v0.0-bootstrap] - 2026-07-28
+
+### Afegit
 - Estructura inicial del projecte (bootstrap).
 - README, dues llicències, CONTRIBUTING, .gitignore estricte.
 - ADR inicials (0001-0005).

@@ -116,8 +116,9 @@ BernatCyberLab/
 
 1. Llegeix el [`docs/00-pla-director.md`](docs/00-pla-director.md) sencer.
 2. Fes una còpia local: `git clone https://github.com/BernatMora/cyberlab-ai.git` (a qualsevol dels teus equips).
-3. Executa les comandes d'auditoria de la Fase 0 (Windows, Mac, RPi) i enganxa la sortida al fitxer corresponent.
-4. Confirma la fase 0 → comencem la fase 1 (Tailscale).
+2. Executa les ordres d'auditoria de la Fase 0 — totes organitzades i llestes per copiar-enganxar a [`docs/10-fase-0-auditoria/ordinances.md`](docs/10-fase-0-auditoria/ordinances.md).
+3. Comparteix-me el resum anonimitzat amb la plantilla que trobaràs al final d'aquell fitxer.
+4. Confirmo la fase 0 → comencem la fase 1 (Tailscale).
 
 ## Crèdits
 
