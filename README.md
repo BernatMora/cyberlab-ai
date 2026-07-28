@@ -93,6 +93,15 @@ BernatCyberLab/
 │   ├── 11-fase-1-tailscale/
 │   └── ...
 │
+├── book/                            ← Llibre Viu del CyberLab
+│   ├── README.md                    ← guia editorial
+│   ├── SUMMARY.md                   ← índex mestre
+│   ├── chapters/                    ← capítols (CAP-XX-YY)
+│   ├── exercises/  labs/            ← exercicis i laboratoris
+│   ├── assets/                      ← imatges, diagrames
+│   ├── appendices/                  ← ANN-XX (glossari, comandes, ...)
+│   └── templates/                   ← plantilles per a nous continguts
+│
 ├── network/                         ← esquemes, ACL, firewall (.example)
 ├── docker/                          ← Compose per a apps vulnerables
 ├── virtual-machines/                ← fitxes de cada VM
@@ -111,6 +120,14 @@ BernatCyberLab/
 │
 └── _local/                          ← MAI al Git — valors reals del teu entorn
 ```
+
+## El Llibre Viu
+
+A més de la documentació del laboratori (`docs/`), el projecte inclou un
+**llibre tècnic viu** a [`book/`](book/) — la memòria completa del
+projecte, amb filosofia, decisions, instal·lacions, configuracions,
+exercicis i conclusions. Veure [`book/README.md`](book/README.md) per a la
+guia editorial i [`book/SUMMARY.md`](book/SUMMARY.md) per a l'índex.
 
 ## Com començar
 
