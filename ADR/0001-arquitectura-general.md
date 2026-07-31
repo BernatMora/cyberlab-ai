@@ -1,73 +1,94 @@
 # ADR-0001 — Arquitectura general del CyberLab
 
-- **Estat:** acceptada
-- **Data:** 2026-07-28
-- **Decisors:** Bernat Mora + Hermes
-- **Tags:** arquitectura, visió-global
+- **Estat:** acceptada (revisada 2026-07-28)
+- **Data original:** 2026-07-28
+- **Última revisió:** 2026-07-28
+- **Decisors:** Bernat Mora + Hermes Agent
+- **Tags:** arquitectura, visio-global
 
 ## Context i problema
 
-L'objectiu és construir un laboratori personal de ciberseguretat que sigui **modular, escalable, documentat, segur i fàcil de mantenir**, sobre el maquinari ja disponible (PC Windows, 2 MacBook, Raspberry Pi 4, iPhone). Cap dispositiu ha d'assumir més responsabilitats de les que pot dur de forma sostenible 24/7.
+L'objectiu és construir un laboratori personal de ciberseguretat que sigui **modular, escalable, documentat, segur i fàcil de mantenir**, sobre el maquinari ja disponible, amb dues ubicacions principals (hort i casa) unides per Tailscale a través d'Internet. Cap dispositiu ha d'assumir més responsabilitats de les que pot dur de forma sostenible 24/7.
 
 ## Consideracions
 
-- El PC Windows (HP Z1 G9, 32 GB RAM) és la màquina més potent — bona candidata per a virtualització.
-- El MacBook Pro 13" (macOS 12.7.6) pot estar sempre connectat — bona candidata per a serveis IA.
-- El MacBook Air ha de quedar lliure per a ús diari (bateria + rendiment).
-- La Raspberry Pi 4 té 4 GB de RAM — insuficient per a models d'IA útils, però adequada per a serveis lleugers.
-- L'iPhone és un terminal mòbil, no un servidor.
-- Tots els dispositius poden participar en una xarxa Tailscale, formant un tailnet privat sense exposar ports al router.
+- El **PC de l'hort** (HP Z1 G9 Tower, 32 GB RAM) és la màquina més potent — bona candidata per allotjar el cor del laboratori (hipervisor, màquines virtuals, Kali natiu).
+- El **Mac vell de l'hort** (macOS 12.7.6) pot estar sempre connectat a l'hort — bona candidata per a serveis complementaris (Tailscale, scripts d'automatització, terminals d'accés).
+- El **Mac potent de casa** és el centre de control natural: des d'on es fan les pràctiques, es gestionen les eines, s'analitzen resultats.
+- El **MacBook Air** de casa queda com a **consola humana diària** (VS Code, navegador, SSH cap al lab).
+- La **Raspberry Pi del projecte hort-osona** queda **fora d'aquest projecte** — pertany al sistema de sensors del hort. Si volem un `cyber-pi`, l'adquirim nova.
+- L'**iPhone** és un terminal mòbil.
+- L'accés remot a l'hort passa per **Parlem 5G**, amb **CGNAT actiu** — fet que descarta port forwarding directe i fa de **Tailscale** l'única via còmoda.
 
 ## Opcions considerades
 
-### Opció A — Tot al PC Windows (un sol servidor)
+### Opció A — Tot al PC de l'hort (un sol servidor)
 - Pros: simplicitat, una sola màquina potent.
-- Contres: punt únic de fallada per a tot; el PC ha de fer VMs + IA + monitorització; l'iPhone queda exclòs.
+- Contres: punt únic de fallada; difícil accedir-hi des de casa a través de CGNAT; l'iPhone queda exclòs.
 
-### Opció B — Distribució per responsabilitat (escollida)
-- Pros: cada m té un rol clar; fallides aïllades; replicable.
-- Contres: més complexitat de xarxa i configuració inicial; cal coordinació entre equips.
+### Opció B — Distribució per responsabilitat amb 2 ubicacions (escollida)
+- Pros: cada m té un rol clar; failovers aïllats; replicable; Tailscale uneix tot; el Mac potent de casa és un centre de control natural.
+- Contres: més complexitat de xarxa; cal gestionar la latència entre ubicacions; cal suportar el cas "el router Parlem cau".
 
 ### Opció C — Tot al cloud
 - Pros: cap dependència del maquinari local.
-- Contres: costos, latència, pràctiques ofensives al cloud són delicades; no és l'objectiu.
+- Contres: costos, latència, pràctiques ofensives al cloud són delicades; perd el sentit del projecte.
 
 ## Decisió
 
-**Opció B — distribució per responsabilitat:**
+**Opció B — distribució per responsabilitat en 2 ubicacions:**
 
-- `cyber-host` (PC Windows) → host de virtualització i storage.
-- `cyber-brain` (MacBook Pro) → Hermes, Ollama, MCP, automatitzacions.
-- `cyber-pi` (Raspberry Pi) → DNS, monitorització, watchdog.
-- `cyber-control` (MacBook Air) → consola humana sense serveis.
-- `cyber-mobile` (iPhone) → consola mòbil sense serveis.
+**Ubicació HORT** (sota Parlem 5G, CGNAT):
 
-Tots units per Tailscale (xarxa de gestió). Les xarxes de laboratori (10.10.20/30/40/24) **no es publiquen al tailnet** per defecte.
+- `cyber-host` (PC HP Z1 G9, 32 GB) → host principal. **Kali Linux natiu** + hipervisor per a màquines virtuals (Metasploitable, DVWA, màquines pròpies).
+- `cyber-helper` (MacBook Pro 13" vell, macOS 12.7.6) → serveis complementaris a l'hort: Tailscale, scripts de monitoratge, terminal secundari.
+
+**Ubicació CASA**:
+
+- `cyber-brain` (Mac potent de casa) → centre de control: VS Code, scripts d'anàlisi, eines de documentació, Hermes Agent (en una fase posterior).
+- `cyber-control` (MacBook Air) → consola diària lleugera.
+- `cyber-mobile` (iPhone) → consola mòbil.
+
+**Ubicació PER DEFINIR**:
+
+- `cyber-pi` → infraestructura lleugera (AdGuard Home, Uptime Kuma, ntfy, watchdog). Decidirem a Fase 1 si és una RPi nova, un contenidor Docker al PC de l'hort o una altra cosa.
+
+**Xarxa comuna**: **Tailscale tailnet** que uneix tot. Cap port obert al router de l'hort ni al de casa. Les xarxes internes del laboratori (10.10.x) no es publiquen al tailnet per defecte.
 
 ## Conseqüències
 
 ### Positives
+
 - Cada m pot fallar sense arrossegar la resta.
-- Les VMs poden consumir RAM del PC sense competir amb Ollama.
-- El MacBook Air queda 100% per a ús diari.
+- La Kali del PC de l'hort té 32 GB de RAM per a màquines virtuals.
+- Des del Mac potent de casa tenim latència acceptable (~50 ms) al lab de l'hort via Tailscale.
+- Si Parlem cau, podem continuar treballant localment a casa.
 
 ### Negatives
-- Més passos d'instal·lació distribuïts.
-- Tailscale és un punt únic d'accés remot (risc parcial; mitigat amb autenticació multifactor i monitorització).
+
+- Tailscale és un punt únic d'accés remot (risc parcial; mitigat amb autenticació multifactor).
+- El Mac vell de l'hort degradarà la bateria si està sempre endollat → cal gestionar càrrega.
+- El PC de l'hort ha d'estar sempre encès → consum elèctric + configuració de Wake-on-LAN.
 
 ### Riscos acceptats
-- El MacBook Pro degradarà la bateria si està sempre endollat → mitigat amb `Al Dente` i comprovacions periòdiques.
-- L'SD de la RPi pot fallar → mitigat amb còpies de seguretat de la imatge i/o SSD USB boot.
+
+- **CGNAT de Parlem** impedeix port forwarding directe → Tailscale és l'única via. Acceptat perquè és la millor solució real.
+- Latència hort ↔ casa via Tailscale (~50 ms) → acceptable per SSH, terminal, eines web; potser no òptim per eines gràfiques intensives.
+- Possible desconnexió del router Parlem → cal un script a la RPi (quan existeixi) que enviï alertes via ntfy quan perd connectivitat.
 
 ## Validació
 
-- Cadascun dels 5 dispositius pot fer ping a la resta via Tailscle.
+- Cadascun dels 5 equips pot fer ping a la resta via Tailscale.
 - Cada dispositiu té el seu nom al tailnet i resol per MagicDNS.
-- Les xarxes de laboratori (10.10.x) **no** són visibles des del tailnet.
-- Una VM de prova no pot accedir a la xarxa domèstica sense regla explícita.
+- Les xarxes de laboratori (10.10.x) no són visibles des del tailnet.
+- Una VM de prova al PC de l'hort no pot accedir a la xarxa domèstica de casa sense regla explícita.
+- El Mac potent de casa pot obrir una sessió SSH al PC de l'hort via Tailscale en <100 ms.
+- L'iPhone pot fer SSH al PC de l'hort via Tailscale amb xifrat WireGuard.
 
 ## Referències
 
 - `docs/00-pla-director.md` — Pla Director complet
-- `architecture/diagram-general.md` — diagrama Mermaid
-- `architecture/convencions-noms.md` — noms dels equips
+- [`../book/chapters/cap-01-10-arquitectura-general.md`](../book/chapters/cap-01-10-arquitectura-general.md) — capítol equivalent al llibre
+- [`../book/chapters/cap-01-60-ubicacions-i-desplegaments.md`](../book/chapters/cap-01-60-ubicacions-i-desplegaments.md) — escenaris de desplegament
+- `ADR/0002-rolls-per-equip.md` — decisió de rols
+- `ADR/0004-segmentacio-xarxa.md` — segmentació de xarxa

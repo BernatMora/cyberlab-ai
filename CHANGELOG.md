@@ -7,6 +7,19 @@ Adoptem el format de [Keep a Changelog](https://keepachangelog.com/) i
 ## [Unreleased]
 
 ### Afegit
+- **Integració del material antic de lab-seguretat** al llibre:
+  - ADR-0001 i ADR-0002 revisats amb el context hort/casa real.
+  - Nou `CAP-01-60-ubicacions-i-desplegaments.md` (published) — explica els 2 escenaris (hort amb Parlem 5G/CGNAT i casa) i el rol de cada equip.
+  - `ANN-05-xuleta-comandes.md` (published) — annex de comandes basat en el `xuleta-comandes.md` antic, adaptat al CyberLab.
+  - `ANN-07-historia-del-projecte.md` (published) — cronologia, decisions, lliçons apreses.
+  - `scripts/cheatsheet/build-pdf.sh` — script que genera el PDF de la xuleta des del .md.
+  - `book/appendices/ann-05-xuleta-comandes.pdf` — PDF generat (3 pàgines).
+- **Decisió important**: la RPi del projecte hort-osona queda **fora** del CyberLab. Si volem `cyber-pi`, l'adquirim nova.
+- **Validació YAML**: 57 fitxers amb frontmatter vàlid, 0 errors.
+
+## [v0.1-book-skeleton] - 2026-07-28
+
+### Afegit
 - **Llibre Viu del Bernat CyberLab**: nova carpeta `book/` amb estructura completa.
   - `book/README.md` (guia editorial), `book/SUMMARY.md` (índex mestre), `book/LICENSE` (CC BY-SA 4.0).
   - 7 plantilles: `cap-XX-YY.md`, `ex-XX-YY.md`, `lab-XX-YY.md`, `adr-XXX.md`, `trb-XX-YY.md`, `chk-XX-YY.md`, `ann-XX.md`.
