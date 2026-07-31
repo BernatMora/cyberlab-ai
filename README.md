@@ -25,15 +25,21 @@ L'objectiu no és només instal·lar eines, sinó construir una **plataforma est
 
 ## Arquitectura en una mirada
 
-| Dispositiu | Nom al tailnet | Rol |
-|---|---|---|
-| PC Windows 11 | `cyber-host` | Host de virtualització (Hyper-V), VMs, Docker, emmagatzematge |
-| MacBook Pro 13" | `cyber-brain` | Cervell de serveis: Hermes, Ollama, MCP, automatitzacions |
-| Raspberry Pi 4 | `cyber-pi` | Infraestructura lleugera: DNS, monitorització, watchdog |
-| MacBook Air 13" | `cyber-control` | Consola humana d'administració (sense serveis permanents) |
-| iPhone 17 | `cyber-mobile` | Consola mòbil d'emergència i consulta |
+| Dispositiu | Ubicació | Nom al tailnet | Rol |
+|---|---|---|---|
+| PC HP Z1 G9 Tower (32 GB) | **Hort** | `cyber-host` | Host principal: Kali Linux natiu + hipervisor per a màquines virtuals |
+| MacBook Pro 13" vell | **Hort** | `cyber-helper` | Serveis complementaris a l'hort: Tailscale, scripts, monitoratge |
+| Mac potent | **Casa** | `cyber-brain` | Centre de control: VS Code, scripts, eines, futura Ollama |
+| MacBook Air 13" | **Casa** | `cyber-control` | Consola diària lleugera (sense serveis permanents) |
+| iPhone 17 | **Casa / mòbil** | `cyber-mobile` | Consola mòbil d'emergència i consulta |
+| (futura) RPi `cyber-pi` | Per decidir | `cyber-pi` | Infraestructura lleugera (AdGuard Home, Uptime Kuma, ntfy) |
 
-Detalls complets a [`docs/00-pla-director.md`](docs/00-pla-director.md) i [`architecture/`](architecture/).
+**Nota**: la RPi del projecte hort-osona queda **fora** d'aquest projecte.
+
+Tots els equips units per **Tailscale** (xarxa mesh WireGuard sobre Parlem 5G/CGNAT).
+Detalls complets a [`docs/00-pla-director.md`](docs/00-pla-director.md),
+[`book/chapters/cap-01-60-ubicacions-i-desplegaments.md`](book/chapters/cap-01-60-ubicacions-i-desplegaments.md)
+i els ADR [`ADR/0001-arquitectura-general.md`](ADR/0001-arquitectura-general.md).
 
 ## Llicència
 

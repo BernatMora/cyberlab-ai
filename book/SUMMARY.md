@@ -22,6 +22,7 @@
 | [CAP-01-30](chapters/cap-01-30-xarxes-fonaments.md) | Fonaments de xarxes | outline |
 | [CAP-01-40](chapters/cap-01-40-subxarxes-segmentacio.md) | Subxarxes i segmentació | outline |
 | [CAP-01-50](chapters/cap-01-50-vlan.md) | VLAN | idea |
+| [CAP-01-60](chapters/cap-01-60-ubicacions-i-desplegaments.md) | Ubicacions i desplegaments | published |
 
 ## Bloc 2 — Maquinari i plataforma
 
@@ -104,6 +105,9 @@
 | [ANN-02](appendices/ann-02-comandes-rapides.md) | Comandes ràpides | idea |
 | [ANN-03](appendices/ann-03-references.md) | Referències | idea |
 | [ANN-04](appendices/ann-04-changelog-llibre.md) | Changelog del llibre | idea |
+| [ANN-05](appendices/ann-05-xuleta-comandes.md) | Xuleta de comandes | published |
+| [ANN-06](appendices/ann-06-glossari-tecnic.md) | Glossari tècnic ampliat | idea |
+| [ANN-07](appendices/ann-07-historia-del-projecte.md) | Història del projecte | published |
 
 ## Llegenda d'estats
 
