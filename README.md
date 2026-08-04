@@ -80,6 +80,7 @@ Fase actual: **Fase 0 — Auditoria de maquinari** (pendent de validació real).
 [ ] Fase 9  SIEM i defensa
 ```
 
+Estat operatiu resumit: [`PROJECT_STATUS.md`](PROJECT_STATUS.md).  
 Roadmap complet: [`docs/00-pla-director.md`](docs/00-pla-director.md) § 18.
 
 ## Estrutura del repositori
