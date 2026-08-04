@@ -6,6 +6,15 @@ Adoptem el format de [Keep a Changelog](https://keepachangelog.com/) i
 
 ## [Unreleased]
 
+### Canviat
+- Arquitectura consolidada: Windows 11 Pro és el host de `cyber-host`, Hyper-V és l'hipervisor i Kali funciona com a VM d'atac.
+- Separació explícita entre documentació preparada i fases validades sobre maquinari real.
+- Validació automàtica de qualitat, scripts i patrons de secrets.
+
+### Corregit
+- Eliminada la contradicció entre Kali natiu i Hyper-V.
+- Eliminada la secció duplicada de `v0.0-bootstrap`.
+
 ### Afegit
 - **Integració del material antic de lab-seguretat** al llibre:
   - ADR-0001 i ADR-0002 revisats amb el context hort/casa real.
