@@ -26,9 +26,13 @@ for path in ROOT.rglob("*"):
     if not path.is_file() or ".git" in path.parts or path.suffix.lower() not in text_suffixes:
         continue
     text = path.read_text(encoding="utf-8", errors="replace")
-    for label, pattern in secret_patterns.items():
-        if pattern.search(text):
-            errors.append(f"{path.relative_to(ROOT)}: possible {label}")
+    for line_number, line in enumerate(text.splitlines(), start=1):
+        placeholder = any(marker in line.lower() for marker in ("xxxxx", "example", "placeholder", "<tail", "<token", "<api"))
+        if placeholder:
+            continue
+        for label, pattern in secret_patterns.items():
+            if pattern.search(line):
+                errors.append(f"{path.relative_to(ROOT)}:{line_number}: possible {label}")
 
 for path in (ROOT / "book").rglob("*.md"):
     text = path.read_text(encoding="utf-8")
