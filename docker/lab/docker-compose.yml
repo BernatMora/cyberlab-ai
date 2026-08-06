@@ -1,0 +1,35 @@
+services:
+  dvwa:
+    image: vulnerables/web-dvwa
+    container_name: dvwa
+    ports:
+      - "127.0.0.1:8080:80"
+    restart: unless-stopped
+    networks:
+      lab-net:
+        ipv4_address: 10.10.30.10
+
+  juice-shop:
+    image: bkimminich/juice-shop
+    container_name: juice-shop
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: unless-stopped
+    networks:
+      lab-net:
+        ipv4_address: 10.10.30.20
+
+  metasploitable:
+    image: peakkk/metasploitable
+    container_name: metasploitable
+    restart: unless-stopped
+    networks:
+      lab-net:
+        ipv4_address: 10.10.30.30
+
+networks:
+  lab-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.30.0/24

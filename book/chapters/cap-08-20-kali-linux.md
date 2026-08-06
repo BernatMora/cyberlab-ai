@@ -239,6 +239,28 @@ Configuració SSH a Hermes: `ssh <USUARI_KALI>@hort` (resolt per Tailscale Magic
 - Eines ofensives preinstal·lades (nmap, nikto, sqlmap, gobuster).
 - Limitació actual: 8 GB RAM — sense VMs fins a tenir l'HP Z1 G9.
 
+### 14. Sessió 2026-08-06 — Primer boot amb Tailscale + lab Docker
+
+**Què hem fet avui al Kali:**
+
+1. **Tailscale** instal·lat i engegat (entra al tailnet `bernatlab`).
+   Des del Mac de casa o la RPi ja es pot fer `ssh 100.x.y.z` (la IP
+   tailnet que Tailscale assigna al Kali) sense obrir ports al router.
+2. **Lab Docker** pujat amb `docker compose up -d` — 3 contenidors
+   funcionant a `10.10.30.0/24` (veure CAP-08-10).
+3. **Aïllament** activat amb `isolate-lab.sh` i registrat com a servei
+   systemd `isolate-lab.service` per persistir entre reinicis
+   (veure EX-08-05).
+
+**Lliçons:**
+
+- L'ordre correcta d'instal·lació al Kali és: Tailscale → Docker →
+  docker-compose up → isolate-lab. Si s'inverteix l'ordre, pots tenir
+  regles iptables que esborren el bridge de Docker.
+- El servei systemd **s'ha d'executar des del Kali** amb `sudo cp` —
+  fer-ho remotament via `ssh` pot fallar per permisos del subsistema
+  `pam`/`polkit`.
+
 ---
 
 ## Referències

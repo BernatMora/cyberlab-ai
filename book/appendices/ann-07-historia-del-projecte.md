@@ -2,9 +2,9 @@
 id: ANN-07
 title: "Història del projecte"
 status: published
-version: 1
+version: 1.1
 created: 2026-07-28
-updated: 2026-07-28
+updated: 2026-08-06
 authors:
   - Bernat Mora
 type: changelog
@@ -94,6 +94,63 @@ garantir continuïtat entre sessions.
 - Estructura completa + llicència doble (MIT + CC BY-SA 4.0).
 - Llibre Viu iniciat amb Bloc 0 publicat.
 - 38 capítols d'esquelet preparats.
+
+### 2026-08-06 — Primer lab real muntat al Kali
+
+**Era el primer dia amb un lab de veritat corrent.** Fins ara tot era teoria
++ esquelet del llibre. Avui hem fet el pas a la pràctica.
+
+**Què s'ha fet al Kali (host hort-osona):**
+
+1. **Tailscale instal·lat** amb `curl -fsSL https://tailscale.com/install.sh | sh`
+   i `tailscale up` (autenticat amb el compte de Bernat). Això connecta el
+   Kali al tailnet com `hort` — accessible via `100.x.y.z` des de qualsevol
+   equip del tailnet (RPi, Mac casa, PC feina).
+2. **Docker 28.5.2** ja estava instal·lat. Creat `~/cyberlab/docker-compose.yml`
+   amb **3 víctimes** a la xarxa `lab-net` (`10.10.30.0/24`):
+   - `dvwa` (`vulnerables/web-dvwa`) — `10.10.30.10`, port `127.0.0.1:8080`
+   - `juice-shop` (`bkimminich/juice-shop`) — `10.10.30.20`, port `127.0.0.1:3000`
+   - `metasploitable` (`peakkk/metasploitable`) — `10.10.30.30`, sense ports
+3. **Aïllament de la xarxa**: creats `isolate-lab.sh` (regles
+   `iptables -A DOCKER-USER -s 10.10.30.0/24 -d 192.168.1.0/24 -j DROP` +
+   `! -d 10.10.30.0/24 -j DROP`) i `isolate-lab.service` (oneshot
+   `After=docker.service`) per fer l'aïllament persistent en cada boot.
+4. **Verificació**: `docker ps` → 3 contenidors `Up`. DVWA respon 302,
+   Juice Shop 200, Metasploitable accessible a la xarxa interna.
+
+**Què s'ha fet al repo `cyberlab-ai`:**
+
+- Commit `a28950c` — `cap-05-10-docker.md`, `cap-08-10-apps-vulnerables.md`
+  i `cap-08-20-kali-linux.md` redactats amb dades reals del lab (placeholders
+  en comptes de valors sensibles).
+- Commit `076ec5b` — neteja de dades reals abans de fer-lo públic.
+- Commit `291e5c1` — afegit Juice Shop i Metasploitable (3 contenidors);
+  nous exercicis EX-08-01 a 06.
+- **Recuperat al repo** (avui, sessió actual): `docker/lab/{docker-compose.yml,
+  isolate-lab.sh, isolate-lab.service, README.md}` que vivien sols al Kali.
+- **Annex ANN-07** actualitzat amb aquesta entrada.
+
+**Lliçons apreses:**
+
+- **Mai executar res com a root sense validar-ho abans** al Kali (la
+  sessió GLM va intentar escriure a `/etc/systemd/` des del Mac — cal
+  fer-ho des del Kali mateix).
+- **`-L` SSH tunnel és l'única forma neta d'accedir a serveis publicats
+  a `127.0.0.1`** des d'una altra màquina del tailnet.
+- **Cal `iptables -D` abans de `iptables -A`** per fer l'script idempotent
+  (per si l'arrenques dues vegades).
+- **`RemainAfterExit=yes`** al servei systemd manté l'estat "actiu" tot i
+  ser `oneshot` — si no, `systemctl status` diria `inactive (dead)`.
+- **El repo ha d'estar al dia amb el que passa al Kali**: aquesta sessió
+  n'és la prova — hi havia 3 fitxers al Kali que no estaven versionats.
+
+**Pendents per a la pròxima sessió:**
+
+- HP Z1 G9 (32 GB RAM) — muntar VMs natives (Metasploitable 2 ISO, Windows
+  vulnerable, Active Directory lab).
+- Afegir un IDS al lab (Snort o Suricata) per practicar detecció.
+- Més exercicis: SQL injection a Juice Shop, JWT attacks, XXE.
+- Plantilla d'informe de pentest (executive summary + findings).
 
 ### 2026-07-28 — Integració del material antic
 
