@@ -218,6 +218,68 @@ l'aïllament torna sol.
 - Una **plantilla d'informe de pentest** — el document final que
   escriuràs explicant què has trobat i com arreglar-ho.
 
+### 2026-08-06 — Primeres victòries reals al lab (sessió nocturna)
+
+**El que va passar aquesta nit (21:30 — 22:00):**
+
+Després de dies configurant el laboratori, aquesta nit per primera
+vegada hem **atacat de veritat**. No era teoria — era el navegador
+del Mac obert contra DVWA.
+
+**El camí fins aquí:**
+
+1. A l'inici el túnel SSH (`ssh -L 8080:127.0.0.1:8080
+   hort-osona@hort`) no funcionava perquè el port 8080 del Mac ja
+   estava ocupat per una sessió SSH antiga. La solució: la nova sessió
+   ja tenia el túnel obert (PID 44112 al Mac escoltant a `http-alt`).
+   La regla és: **mira sempre amb `lsof -i :8080` abans de crear-ne
+   un de nou**.
+
+2. Safari mostrava directament la pàgina de **Setup de DVWA** (no
+   la de login). Cal fer clic a **"Setup / Create / Reset Database"**
+   un cop per inicialitzar la base de dades MySQL. Després ja surt
+   el login.
+
+3. Login correcte: `admin` / `password` (credencials per defecte).
+
+**Les dues victòries:**
+
+🥇 **EX-08-02 — SQL injection (Low):**
+- Canviar seguretat a "Low", anar a "SQL Injection".
+- Posar `' OR '1'='1` al camp User ID.
+- Resultat: la base de dades ha retornat els 5 usuaris
+  (`admin`, `gordonb`, `1337`, `pablo`, `smithy`) sense saber cap
+  contrasenya. **Primera injecció SQL de la història al lab.**
+
+🥈 **EX-08-03 — XSS reflectit (Low):**
+- Anar a "XSS (Reflected)" al menú.
+- Posar `<script>alert('XSS by Bernat')</script>` al camp "What's
+  your name".
+- Resultat: **popup al navegador** amb el text "XSS by Bernat".
+  **Primera execució de codi al navegador.**
+
+**Lliçons apreses avui (molt pràctiques):**
+
+- **Abans de crear un túnel SSH, comprova amb `lsof -i :PORT` si el
+  port ja està ocupat.** Si hi ha un `ssh ... LISTEN`, el túnel ja
+  existeix — només cal obrir el navegador.
+- **DVWA requereix un pas previ de Setup** la primera vegada
+  (o després de netejar el contenidor). Cal clicar el botó verd
+  de "Setup / Create / Reset Database" per inicialitzar la BD.
+- **Els popups poden estar blocats a Safari** — si el XSS no mostra
+  l'alerta, mirar la icona de popup bloquejat a la barra d'adreces
+  i permetre'ls per a `127.0.0.1`.
+- **Safari, Firefox i Chrome gestionen els popups diferent.** Per a
+  pràctiques XSS és més còmode Firefox o LibreWolf.
+
+**Estat emocional:**
+
+Aquest ha estat el moment en què el laboratori ha deixat de ser
+"papers" i ha passat a ser **real**. Ja no és un esquema ni una
+configuració — és gent entrant a DVWA i explotant coses.
+
+Això val la pena recordar-ho.
+
 ### 2026-07-28 — Integració del material antic
 
 Aquest annex s'ha creat per integrar i actualitzar la informació del
