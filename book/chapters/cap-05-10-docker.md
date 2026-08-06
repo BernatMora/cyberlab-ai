@@ -105,7 +105,7 @@ sudo apt install docker-compose -y
 Per no necessitar `sudo` per a cada comanda docker:
 
 ```bash
-sudo usermod -aG docker hort-osona
+sudo usermod -aG docker <USUARI_KALI>
 ```
 
 Cal tancar i reobrir la sessió SSH perquè tingui efecte.

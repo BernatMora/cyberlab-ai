@@ -67,8 +67,8 @@ Kali s'instal·la **nativament** al PC de l'hort (hostname `hort`). Aquesta màq
 ┌─────────────────────────────────────────────┐
 │  PC Hort (Kali natiu)                       │
 │  hostname: hort                              │
-│  IP Tailscale: 100.97.77.87                  │
-│  Usuari: hort-osona                          │
+│  IP Tailscale: <TAILSCALE_IP_HORT>                  │
+│  Usuari: <USUARI_KALI>                          │
 │                                              │
 │  ┌─────────┐  ┌─────────┐  ┌──────────────┐ │
 │  │ Kali    │  │ Docker  │  │ DVWA         │ │
@@ -76,12 +76,12 @@ Kali s'instal·la **nativament** al PC de l'hort (hostname `hort`). Aquesta màq
 │  │ (atac)  │  │         │  │ víctima      │ │
 │  └─────────┘  └─────────┘  └──────────────┘ │
 │                                              │
-│  Tailscale ──→ 100.97.77.87 ←── Mac control  │
+│  Tailscale ──→ <TAILSCALE_IP_HORT> ←── Mac control  │
 └─────────────────────────────────────────────┘
 ```
 
 **Hardware actual:**
-- Intel Pentium G850 @ 2.90GHz
+- <CPU_MODEL>
 - 8 GB RAM
 - Disc local
 
@@ -93,7 +93,7 @@ Kali s'instal·la **nativament** al PC de l'hort (hostname `hort`). Aquesta màq
 
 Descarregar la imatge de https://www.kali.org/get-kali/ i gravar-la amb Rufus o balenaEtcher en un USB.
 
-Arrancar el PC des de l'USB i seguir l'instal·lador. Crear l'usuari `hort-osona` amb la contrasenya corresponent.
+Arrancar el PC des de l'USB i seguir l'instal·lador. Crear l'usuari `<USUARI_KALI>` amb la contrasenya corresponent.
 
 ### 8.2 — Activar SSH
 
@@ -114,14 +114,14 @@ ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ""
 Copiar la clau pública al Kali (al Kali):
 
 ```bash
-mkdir -p ~/.ssh && echo "ssh-ed25519 AAAA... bernatmorasanglas@MacBook-Air" >> ~/.ssh/authorized_keys
+mkdir -p ~/.ssh && echo "ssh-ed25519 AAAA... <USUARI_MAC>@<HOSTNAME_MAC>" >> ~/.ssh/authorized_keys
 chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys
 ```
 
 Verificar connexió (al Mac):
 
 ```bash
-ssh hort-osona@hort
+ssh <USUARI_KALI>@hort
 ```
 
 ### 8.4 — Permetre sudo sense contrasenya (per gestió remota)
@@ -129,7 +129,7 @@ ssh hort-osona@hort
 Al Kali:
 
 ```bash
-echo "hort-osona ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/hort-osona
+echo "<USUARI_KALI> ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/<USUARI_KALI>
 ```
 
 ### 8.5 — Instal·lar Tailscale
@@ -147,7 +147,7 @@ Verificar:
 tailscale status
 ```
 
-Sortida esperada: `hort` amb IP `100.97.77.87`.
+Sortida esperada: `hort` amb IP `<TAILSCALE_IP_HORT>`.
 
 ### 8.6 — Eines ofensives preinstal·lades
 
@@ -187,13 +187,13 @@ Comandes de test:
 
 ```bash
 # SSH accessible des del Mac
-ssh hort-osona@hort "echo OK"
+ssh <USUARI_KALI>@hort "echo OK"
 
 # Tailscale actiu
-ssh hort-osona@hort "tailscale status"
+ssh <USUARI_KALI>@hort "tailscale status"
 
 # Eines disponibles
-ssh hort-osona@hort "nmap --version | head -1"
+ssh <USUARI_KALI>@hort "nmap --version | head -1"
 ```
 
 ## 11. Problemes habituals
@@ -204,7 +204,7 @@ ssh hort-osona@hort "nmap --version | head -1"
 | SSH `connection refused` | Servei SSH no activat | `sudo systemctl enable --now ssh` |
 | SSH `permission denied` | Clau no copiada o usuari incorrecte | Verificar `authorized_keys` i nom d'usuari |
 | `sudo: terminal required` | sudo per SSH sense contrasenya | Configurar `NOPASSWD` a `/etc/sudoers.d/` |
-| Docker `permission denied` | Usuari no al grup docker | `sudo usermod -aG docker hort-osona` |
+| Docker `permission denied` | Usuari no al grup docker | `sudo usermod -aG docker <USUARI_KALI>` |
 
 ## 12. Bones pràctiques
 
@@ -229,11 +229,11 @@ Hermes pot connectar-se per SSH al Kali via Tailscale i:
 - Actualitzar el sistema.
 - Documentar resultats automàticament al repo cyberlab-ai.
 
-Configuració SSH a Hermes: `ssh hort-osona@hort` (resolt per Tailscale MagicDNS).
+Configuració SSH a Hermes: `ssh <USUARI_KALI>@hort` (resolt per Tailscale MagicDNS).
 
 ## 15. Resum
 
-- Kali natiu instal·lat al PC de l'hort (`hort`, 100.97.77.87).
+- Kali natiu instal·lat al PC de l'hort (`hort`, <TAILSCALE_IP_HORT>).
 - SSH per clau pública configurat des del Mac.
 - Tailscale connecta el Kali amb la resta del lab.
 - Eines ofensives preinstal·lades (nmap, nikto, sqlmap, gobuster).

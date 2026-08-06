@@ -211,3 +211,4 @@ $RECYCLE.BIN/
 # *.pcap filter=lfs diff=lfs merge=lfs -text
 # *.vhd* filter=lfs diff=lfs merge=lfs -text
 # *.qcow2 filter=lfs diff=lfs merge=lfs -text
+*.local.md

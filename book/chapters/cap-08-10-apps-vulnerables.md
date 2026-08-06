@@ -129,7 +129,7 @@ DVWA està disponible a `http://127.0.0.1:8080` des del propi Kali.
 Per accedir-hi des del Mac remotament, crear un túnel SSH:
 
 ```bash
-ssh -L 8080:127.0.0.1:8080 hort-osona@hort
+ssh -L 8080:127.0.0.1:8080 <USUARI_KALI>@hort
 ```
 
 Després obrir al navegador del Mac: `http://localhost:8080`
@@ -172,7 +172,7 @@ curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/
 | `curl` retorna `000` | Contenidor encara arrencant | Esperar 5-10 segons |
 | Pàgina en blanc | Cal fer setup primer | Anar a `/setup.php` i crear la BD |
 | `connection refused` al port 8080 | Contenidor aturat | `docker compose up -d` |
-| No accessible des del Mac | No hi ha túnel SSH | `ssh -L 8080:127.0.0.1:8080 hort-osona@hort` |
+| No accessible des del Mac | No hi ha túnel SSH | `ssh -L 8080:127.0.0.1:8080 <USUARI_KALI>@hort` |
 
 ## 12. Bones pràctiques
 
