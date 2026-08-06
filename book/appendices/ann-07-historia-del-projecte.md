@@ -97,60 +97,126 @@ garantir continuïtat entre sessions.
 
 ### 2026-08-06 — Primer lab real muntat al Kali
 
-**Era el primer dia amb un lab de veritat corrent.** Fins ara tot era teoria
-+ esquelet del llibre. Avui hem fet el pas a la pràctica.
+> **Per a mi del futur:** si ara estic llegint això i no recordo què
+> és un "lab de ciberseguretat", vés primer al [CAP-00-15]
+> (cap-00-15-que-es-un-lab.md). Allà t'ho explico amb analogies de
+> cotxes i galliners.
 
-**Què s'ha fet al Kali (host hort-osona):**
+#### Què tenim muntat (en planer)
 
-1. **Tailscale instal·lat** amb `curl -fsSL https://tailscale.com/install.sh | sh`
-   i `tailscale up` (autenticat amb el compte de Bernat). Això connecta el
-   Kali al tailnet com `hort` — accessible via `100.x.y.z` des de qualsevol
-   equip del tailnet (RPi, Mac casa, PC feina).
-2. **Docker 28.5.2** ja estava instal·lat. Creat `~/cyberlab/docker-compose.yml`
-   amb **3 víctimes** a la xarxa `lab-net` (`10.10.30.0/24`):
-   - `dvwa` (`vulnerables/web-dvwa`) — `10.10.30.10`, port `127.0.0.1:8080`
-   - `juice-shop` (`bkimminich/juice-shop`) — `10.10.30.20`, port `127.0.0.1:3000`
-   - `metasploitable` (`peakkk/metasploitable`) — `10.10.30.30`, sense ports
-3. **Aïllament de la xarxa**: creats `isolate-lab.sh` (regles
-   `iptables -A DOCKER-USER -s 10.10.30.0/24 -d 192.168.1.0/24 -j DROP` +
-   `! -d 10.10.30.0/24 -j DROP`) i `isolate-lab.service` (oneshot
-   `After=docker.service`) per fer l'aïllament persistent en cada boot.
-4. **Verificació**: `docker ps` → 3 contenidors `Up`. DVWA respon 302,
-   Juice Shop 200, Metasploitable accessible a la xarxa interna.
+Això és el primer dia que el laboratori funciona de veritat. Fins ara
+tot eren papers: un projecte a GitHub amb 43 capítols (quasi tots
+buits), esquemes bonics de xarxes, i moltes ganes. Avui per fi tenim
+**ordinadors de veritat fent feina**.
 
-**Què s'ha fet al repo `cyberlab-ai`:**
+La idea és molt simple i val la pena entendre-la bé:
 
-- Commit `a28950c` — `cap-05-10-docker.md`, `cap-08-10-apps-vulnerables.md`
-  i `cap-08-20-kali-linux.md` redactats amb dades reals del lab (placeholders
-  en comptes de valors sensibles).
-- Commit `076ec5b` — neteja de dades reals abans de fer-lo públic.
-- Commit `291e5c1` — afegit Juice Shop i Metasploitable (3 contenidors);
-  nous exercicis EX-08-01 a 06.
-- **Recuperat al repo** (avui, sessió actual): `docker/lab/{docker-compose.yml,
-  isolate-lab.sh, isolate-lab.service, README.md}` que vivien sols al Kali.
-- **Annex ANN-07** actualitzat amb aquesta entrada.
+**Imagina que vols aprendre a conduir.** No tens cotxe. Què fas?
+- Opció A: intentes aprendre mirant vídeos a YouTube.
+- Opció B: llogues un cotxe en una pista buida i pratiques.
 
-**Lliçons apreses:**
+L'opció B és molt millor, oi? Doncs un **laboratori de ciberseguretat
+és exactament això**: en lloc de practicar atacs contra internet
+(perillós, il·legal i tonto), prepares **ordinadors de joguina que
+tenen falles a propòsit** i practiques contra ells. Així aprens de
+veritat sense fer mal a ningú.
 
-- **Mai executar res com a root sense validar-ho abans** al Kali (la
-  sessió GLM va intentar escriure a `/etc/systemd/` des del Mac — cal
-  fer-ho des del Kali mateix).
-- **`-L` SSH tunnel és l'única forma neta d'accedir a serveis publicats
-  a `127.0.0.1`** des d'una altra màquina del tailnet.
-- **Cal `iptables -D` abans de `iptables -A`** per fer l'script idempotent
-  (per si l'arrenques dues vegades).
-- **`RemainAfterExit=yes`** al servei systemd manté l'estat "actiu" tot i
-  ser `oneshot` — si no, `systemctl status` diria `inactive (dead)`.
-- **El repo ha d'estar al dia amb el que passa al Kali**: aquesta sessió
-  n'és la prova — hi havia 3 fitxers al Kali que no estaven versionats.
+Aquests ordinadors de joguina es diuen **"víctimes"** en argot — perquè
+tu faràs d'atacant i ells de víctima.
 
-**Pendents per a la pròxima sessió:**
+#### Les 3 joguines que tenim ara
 
-- HP Z1 G9 (32 GB RAM) — muntar VMs natives (Metasploitable 2 ISO, Windows
-  vulnerable, Active Directory lab).
-- Afegir un IDS al lab (Snort o Suricata) per practicar detecció.
-- Més exercicis: SQL injection a Juice Shop, JWT attacks, XXE.
-- Plantilla d'informe de pentest (executive summary + findings).
+Al Kali (l'ordinador "atacant" del lab) hi corren **3 programetes**
+dins de **contenidors Docker** — que són com màquines virtuals molt
+lleugeres, gairebé immediates d'encendre:
+
+1. **DVWA** — una botiga web falsa feta amb PHP.
+   - Per a què serveix: per practicar **SQL injection** (enganyar la
+     botiga perquè et doni les contrasenyes) i **XSS** (colar-te
+     codi al navegador d'altres).
+   - Com t'ho imagines: és com una **botiga de cartró** on tu pots
+     practicar a forçar la caixa enregistradora — perfecte per
+     aprendre, innocent.
+   - On la trobes: a la `10.10.30.10` (adreça interna, invisible
+     des de fora).
+   - Com hi entres: per `http://127.0.0.1:8080` des del Mac, passant
+     per un **túnel SSH** (una mena de passadís secret per la
+     xarxa).
+
+2. **Juice Shop** — una botiga de sucs falsa feta amb Node.js.
+   - Per a què serveix: per practicar vulnerabilitats web **modernes**
+     (les que trobaràs a les botigues de veritat el 2026).
+   - Com t'ho imagines: la **mateixa botiga de cartró** però més
+     moderna — amb targeta de crèdit, login amb Google, cistella de
+     compra. Té un **score board** amagat que et posa estrelles quan
+     trobes cada fallada.
+   - On la trobes: `10.10.30.20`.
+   - Com hi entres: `http://127.0.0.1:3000`.
+
+3. **Metasploitable** — un Linux vell expressament vulnerable.
+   - Per a què serveix: per practicar coses **de servidor antic**:
+     carpetes compartides, FTP, SSH amb contrasenya fluixa, etc.
+   - Com t'ho imagines: un **cotxe dels anys 90** al taller — tot
+     funciona però no té antibloqueig, alarma, ni res. Ideal per
+     aprendre a entrar-hi.
+   - On la trobes: `10.10.30.30`. No té port obert al Mac — t'hi
+     connectes directament des del Kali.
+
+#### Per què estan "aïllades" de la resta de la xarxa
+
+Aquí ve la part més important i on la gent es confon:
+
+Si un contenidor Docker té un bug i l'atacant (en aquest cas TU
+practicant) se n'aprofita, podria intentar **sortir del contenidor**
+cap a la resta d'ordinadors de casa teva (la RPi del hort-osona, el
+Mac, la impressora, etc.). Això seria un desastre — imagina que
+practiques al taller i perds el control del cotxe i atropelles el
+germà.
+
+Per evitar-ho, hem posat **regles de tallafoc** (`iptables`) que
+diuen bàsicament:
+
+> "Els contenidors del lab poden parlar entre ells, però NO poden
+> trucar a la xarxa de casa, ni a internet, ni a la RPi."
+
+Aquestes regles viuen en un script (`isolate-lab.sh`) i s'apliquen
+**automàticament cada vegada que el Kali encén** (gràcies a un servei
+`systemd` anomenat `isolate-lab.service`). Així si reinicies el Kali,
+l'aïllament torna sol.
+
+#### El resum en una frase
+
+> Avui, per primera vegada, tenim un **taller mecànic de ciberseguretat
+> real** funcionant al Kali: 3 joguines vulnerables, una xarxa interna
+> pròpia, un tallafoc que ens protegeix, i accés remot des del Mac de
+> casa via Tailscale.
+
+#### Què NO s'ha de fer
+
+- **No connectar les joguines a internet** — la regla és clara.
+- **No practicar amb el Mac de la feina** — ni de broma.
+- **No posar cap IP o contrasenya real** en aquest llibre — és
+  públic a GitHub.
+
+#### Fitxers nous al repo (per si de cas)
+
+- `docker/lab/docker-compose.yml` — la "recepta" que aixeca les
+  3 joguines.
+- `docker/lab/isolate-lab.sh` — el tallafoc.
+- `docker/lab/isolate-lab.service` — l'encenedor automàtic del
+  tallafoc.
+- `docker/lab/README.md` — les instruccions posades en ordre.
+
+#### Pendents per la pròxima sessió
+
+- Muntar l'**HP Z1 G9** (32 GB RAM) per tenir **màquines virtuals
+  natives** (Windows vulnerable, Active Directory).
+- Afegir un **detector d'intrusions** (Snort o Suricata) — una mena
+  de "càmera de seguretat" que et diu "ei, algú ha intentat
+  entrar".
+- Més exercicis: SQL injection a Juice Shop, atacs de JWT, XXE.
+- Una **plantilla d'informe de pentest** — el document final que
+  escriuràs explicant què has trobat i com arreglar-ho.
 
 ### 2026-07-28 — Integració del material antic
 

@@ -28,11 +28,13 @@ DOCS = [
     # (rel_path, emoji, categoria)
     ("book/README.md", "📖", "El llibre"),
     ("book/chapters/cap-00-10-proleg.md", "📖", "El llibre"),
+    ("book/chapters/cap-00-15-que-es-un-lab.md", "🚦", "Per a novatos"),  # ✨ NOU
     ("book/chapters/cap-00-20-filosofia.md", "📖", "El llibre"),
     ("book/chapters/cap-00-30-objectius.md", "📖", "El llibre"),
     ("book/chapters/cap-00-40-com-llegir.md", "📖", "El llibre"),
     ("book/chapters/cap-00-50-etica-legalitat-abast.md", "📖", "El llibre"),
     ("book/chapters/cap-01-60-ubicacions-i-desplegaments.md", "🧱", "Fonaments"),
+    ("book/exercises/ex-00-01-que-son-aquestes-3-victimes.md", "🎯", "Per a novatos"),  # ✨ NOU
     ("docs/00-pla-director.md", "🎯", "Pla Director"),
     ("architecture/topologia-xarxa.md", "🌐", "Arquitectura"),
     ("architecture/convencions-noms.md", "🏷️", "Arquitectura"),

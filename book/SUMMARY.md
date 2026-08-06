@@ -8,6 +8,7 @@
 | Codi | Títol | Estat |
 |---|---|---|
 | [CAP-00-10](chapters/cap-00-10-proleg.md) | Pròleg | published |
+| **CAP-00-15** | **Què és un laboratori de ciberseguretat (i per què serveix)** | **published** ✨ |
 | [CAP-00-20](chapters/cap-00-20-filosofia.md) | Filosofia del CyberLab | published |
 | [CAP-00-30](chapters/cap-00-30-objectius.md) | Objectius del projecte | published |
 | [CAP-00-40](chapters/cap-00-40-com-llegir.md) | Com llegir aquest llibre | published |

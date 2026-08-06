@@ -66,6 +66,21 @@ després el [CAP-00-30](cap-00-30-objectius.md), el
 [CAP-00-50](cap-00-50-etica-legalitat-abast.md). A partir del CAP-01 tens
 el llibre tècnic pròpiament dit.
 
+### Si ets **jo** del futur i no recordes res
+
+Aquest llibre està escrit per a gent que ja en sap una mica. Però si
+ets tu mateix d'aquí 3 anys i has oblidat tot, **comença aquí**:
+
+1. [CAP-00-15](cap-00-15-que-es-un-lab.md) — què és un laboratori de
+   ciberseguretat, explicat amb analogies de cotxes i galliners
+   (15 min).
+2. [EX-00-01](../exercises/ex-00-01-que-son-aquestes-3-victimes.md) —
+   què són les 3 "víctimes" del lab i què n'aprens amb cada una
+   (10 min, sense tocar res).
+3. Després ja pots tornar a la resta del llibre.
+
+Això et donarà el **mínim viable** per entendre tota la resta.
+
 Si ja tens experiència, salta a la [`SUMMARY.md`](../SUMMARY.md) i tria el
 bloc que t'interessi.
 
