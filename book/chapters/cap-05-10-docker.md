@@ -63,23 +63,30 @@ Perquè abans, per muntar una aplicació vulnerable per fer pràctiques, calia u
 ## 7. Arquitectura al CyberLab
 
 ```
-┌─────────────────────────────────────────────┐
-│  Kali (host) — hort                         │
-│                                              │
-│  Docker Engine (28.5.2)                     │
-│    │                                         │
-│    ├── Contenidor: dvwa                      │
-│    │   imatge: vulnerables/web-dvwa         │
-│    │   xarxa: lab-net (10.10.30.0/24)       │
-│    │   port: 127.0.0.1:8080→80              │
-│    │                                         │
-│    └── Xarxa Docker: cyberlab_lab-net        │
-│        subnet: 10.10.30.0/24                │
-│        (aïllada de la LAN domèstica)         │
-└─────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│  Kali (host) — <HOSTNAME>                             │
+│                                                       │
+│  Docker Engine (28.5.2)                               │
+│    │                                                  │
+│    ├── Contenidor: dvwa (10.10.30.10)                 │
+│    │   imatge: vulnerables/web-dvwa                   │
+│    │   port: 127.0.0.1:8080→80                        │
+│    │                                                  │
+│    ├── Contenidor: juice-shop (10.10.30.20)           │
+│    │   imatge: bkimminich/juice-shop                  │
+│    │   port: 127.0.0.1:3000→3000                     │
+│    │                                                  │
+│    ├── Contenidor: metasploitable (10.10.30.30)       │
+│    │   imatge: peakkk/metasploitable                  │
+│    │   sense ports publicats                          │
+│    │                                                  │
+│    └── Xarxa Docker: cyberlab_lab-net                 │
+│        subnet: 10.10.30.0/24                          │
+│        (aïllada de la LAN domèstica)                  │
+└──────────────────────────────────────────────────────┘
 ```
 
-El port del contenidor es publica a `127.0.0.1:8080` — només accessible des del propi host, no des de la LAN ni des de Tailscale. Per accedir-hi remotament, es fa un túnel SSH.
+Els ports dels contenidors web es publiquen a `127.0.0.1` — només accessibles des del propi host, no des de la LAN ni de Tailscale. Metasploitable no publica cap port — s'ataca per la IP interna. Per accedir-hi remotament, es fa un túnel SSH.
 
 ## 8. Instal·lació
 

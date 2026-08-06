@@ -62,23 +62,31 @@ Perquè per aprendre ciberseguretat ofensiva cal practicar contra objectius real
 ## 7. Arquitectura al CyberLab
 
 ```
-┌──────────────────────────────────────────────┐
-│  Kali (hort) — 10.10.30.0/24 (lab-net)       │
-│                                               │
-│  ┌─────────────────────────────────────────┐ │
-│  │ DVWA (contenidor Docker)                │ │
-│  │ imatge: vulnerables/web-dvwa            │ │
-│  │ IP interna: 10.10.30.x                 │ │
-│  │ port: 127.0.0.1:8080 → 80               │ │
-│  │ xarxa: lab-net (bridge, aïllada)        │ │
-│  └─────────────────────────────────────────┘ │
-│                                               │
-│  Kali natiu = màquina atacant                 │
-│  nmap, nikto, sqlmap, gobuster               │
-└──────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│  Kali (<HOSTNAME>) — 10.10.30.0/24 (lab-net)         │
+│                                                       │
+│  ┌─────────────┐  ┌─────────────┐  ┌───────────────┐ │
+│  │ DVWA        │  │ Juice Shop  │  │ Metasploitable│ │
+│  │ 10.10.30.10 │  │ 10.10.30.20 │  │ 10.10.30.30   │ │
+│  │ :8080→80   │  │ :3000→3000  │  │ sense ports   │ │
+│  │ web vulnerable│ │ web moderna │  │ publicats     │ │
+│  └─────────────┘  └─────────────┘  └───────────────┘ │
+│              Xarxa Docker bridge aïllada              │
+│                                                       │
+│  Kali natiu = màquina atacant                         │
+│  nmap, nikto, sqlmap, gobuster                       │
+└──────────────────────────────────────────────────────┘
 ```
 
-La víctima i l'atacant estan al mateix host (Kali), però la víctima està aïllada en una xarxa Docker bridge. L'atacant accedeix via `127.0.0.1:8080`.
+**Tres víctimes desplegades:**
+
+| Víctima | IP interna | Port host | Tipus |
+|---|---|---|---|
+| DVWA | 10.10.30.10 | 127.0.0.1:8080 | Web amb vulnerabilitats clàssiques |
+| Juice Shop | 10.10.30.20 | 127.0.0.1:3000 | Web moderna (OWASP) |
+| Metasploitable | 10.10.30.30 | cap | Multiservei (FTP, SSH, SMB, MySQL...) |
+
+La víctima i l'atacant estan al mateix host (Kali), però les víctimes estan aïllades en una xarxa Docker bridge. Les web s'accedeixen via `127.0.0.1`, Metasploitable s'ataca per la IP interna `10.10.30.30`.
 
 ## 8. Instal·lació
 
@@ -100,7 +108,26 @@ services:
       - "127.0.0.1:8080:80"
     restart: unless-stopped
     networks:
-      - lab-net
+      lab-net:
+        ipv4_address: 10.10.30.10
+
+  juice-shop:
+    image: bkimminich/juice-shop
+    container_name: juice-shop
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: unless-stopped
+    networks:
+      lab-net:
+        ipv4_address: 10.10.30.20
+
+  metasploitable:
+    image: peakkk/metasploitable
+    container_name: metasploitable
+    restart: unless-stopped
+    networks:
+      lab-net:
+        ipv4_address: 10.10.30.30
 
 networks:
   lab-net:
@@ -111,14 +138,14 @@ networks:
 EOF
 ```
 
-### 8.3 — Arrencar DVWA
+### 8.3 — Arrencar les víctimes
 
 ```bash
 cd ~/cyberlab
 docker compose up -d
 ```
 
-La primera vegada descarrega la imatge (~175 MB).
+La primera vegada descarrega les imatges (~175 MB DVWA, ~400 MB Juice Shop, ~580 MB Metasploitable).
 
 ## 9. Configuració
 
@@ -129,7 +156,7 @@ DVWA està disponible a `http://127.0.0.1:8080` des del propi Kali.
 Per accedir-hi des del Mac remotament, crear un túnel SSH:
 
 ```bash
-ssh -L 8080:127.0.0.1:8080 <USUARI_KALI>@hort
+ssh -L 8080:127.0.0.1:8080 <USUARI_KALI>@<HOSTNAME>
 ```
 
 Després obrir al navegador del Mac: `http://localhost:8080`
@@ -141,7 +168,35 @@ A la primera arrencada, cal anar a `http://localhost:8080/setup.php` i fer clic 
 - Usuari: `admin`
 - Contrasenya: `password`
 
-### 9.3 — Nivells de seguretat
+### 9.3 — Accés a Juice Shop
+
+Juice Shop està disponible a `http://127.0.0.1:3000` des del Kali.
+
+Per accedir-hi des del Mac:
+
+```bash
+ssh -L 3000:127.0.0.1:3000 <USUARI_KALI>@<HOSTNAME>
+```
+
+Obrir: `http://localhost:3000`
+
+No cal configuració inicial — Juice Shop ja està llesta per atacar.
+
+### 9.4 — Accés a Metasploitable
+
+Metasploitable **no publica ports** al host. S'accedeix directament per la IP interna `10.10.30.30` des del Kali:
+
+```bash
+# Escaneig ràpid
+nmap 10.10.30.30
+
+# Escaneig complet
+nmap -sV -sS -p- 10.10.30.30
+```
+
+Serveis disponibles: FTP (21), SSH (22), HTTP (80), SMB (445), MySQL (3306), PostgreSQL (5432), VNC (5900), i més.
+
+### 9.5 — Nivells de seguretat DVWA
 
 DVWA té 3 nivells: **Low**, **Medium**, **High**, **Impossible**.
 
@@ -153,16 +208,20 @@ DVWA té 3 nivells: **Low**, **Medium**, **High**, **Impossible**.
 ## 10. Verificació
 
 ```bash
-# Contenidor actiu
-docker ps | grep dvwa
+# Veure els tres contenidors actius
+docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 
-# Respon HTTP
+# DVWA
 curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/
-# Esperat: 302 (redirecció a login)
+# Esperat: 302 (redirecció al login)
 
-# Des del Mac via túnel SSH
-curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/
-# Esperat: 302
+# Juice Shop
+curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/
+# Esperat: 200
+
+# Metasploitable (escaneig de ports)
+nmap 10.10.30.30
+# Esperat: 21/ftp, 22/ssh, 80/http, 445/smb, 3306/mysql...
 ```
 
 ## 11. Problemes habituals
@@ -170,9 +229,11 @@ curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/
 | Símptoma | Causa probable | Solució |
 |---|---|---|
 | `curl` retorna `000` | Contenidor encara arrencant | Esperar 5-10 segons |
-| Pàgina en blanc | Cal fer setup primer | Anar a `/setup.php` i crear la BD |
-| `connection refused` al port 8080 | Contenidor aturat | `docker compose up -d` |
-| No accessible des del Mac | No hi ha túnel SSH | `ssh -L 8080:127.0.0.1:8080 <USUARI_KALI>@hort` |
+| DVWA pàgina en blanc | Cal fer setup primer | Anar a `/setup.php` i crear la BD |
+| `connection refused` al port 8080/3000 | Contenidor aturat | `docker compose up -d` |
+| No accessible des del Mac | No hi ha túnel SSH | `ssh -L 8080:127.0.0.1:8080 <USUARI_KALI>@<HOSTNAME>` |
+| Metasploitable no respon a curl | No té HTTP per defecte al port publicat | Usar `nmap 10.10.30.30` en lloc de curl |
+| Memòria insuficient | 3 contenidors + Kali superen 8 GB RAM | Aturar els que no facis servir: `docker compose stop metasploitable` |
 
 ## 12. Bones pràctiques
 
@@ -199,18 +260,23 @@ Hermes pot:
 
 ## 15. Resum
 
-- DVWA és la primera aplicació vulnerable del CyberLab.
-- Corre en contenidor Docker a `127.0.0.1:8080`, aïllada a `10.10.30.0/24`.
+- Tres aplicacions vulnerables desplegades en Docker al Kali.
+- DVWA (`10.10.30.10`, port 8080) — vulnerabilitats web clàssiques amb nivells Low→Impossible.
+- Juice Shop (`10.10.30.20`, port 3000) — web moderna OWASP, llesta per atacar.
+- Metasploitable (`10.10.30.30`, sense ports publicats) — multiservei per a pràctiques de xarxa.
+- Totes aïllades a la xarxa Docker `lab-net` (`10.10.30.0/24`), sense accés a Internet ni a la LAN.
 - S'accedeix des del Mac via túnel SSH per Tailscale.
-- Nivells Low → Medium → High → Impossible per apendre progressivament.
 
 ---
 
 ## Exercicis associats
 
-- [EX-08-01] — Escaneig bàsic amb nmap contra DVWA
+- [EX-08-01] — Escaneig bàsic amb nmap contra Metasploitable
 - [EX-08-02] — SQL injection a DVWA (nivell Low)
 - [EX-08-03] — XSS reflectit a DVWA (nivell Low)
+- [EX-08-04] — Exploració de Juice Shop (score board i vulnerabilitats OWASP Top 10)
+- [EX-08-05] — FTP anònim a Metasploitable
+- [EX-08-06] — Explotació SMB a Metasploitable amb enum4linux
 
 ## Referències
 
