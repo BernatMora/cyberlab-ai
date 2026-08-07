@@ -2,7 +2,7 @@
 id: LAB-15-10
 title: "Lab real muntat al Kali (PC hort)"
 status: published
-version: 1.0
+version: 2.0
 created: 2026-08-07
 updated: 2026-08-07
 authors:
@@ -15,12 +15,16 @@ tags:
   - dvwa
   - juice-shop
   - metasploitable
+  - tallafoc
+  - eines
 prerequisites:
   - CAP-00-15
   - CAP-08-10
 related:
   - CAP-00-15
   - CAP-08-10
+  - EX-08-01
+  - EX-08-02
 estimated_time: 30 min
 difficulty: beginner
 ---
@@ -35,9 +39,10 @@ difficulty: beginner
 - **Hostname**: `Hort`
 - **Tailscale IP**: `100.97.77.87`
 - **Usuari SSH**: `hort-osona`
-- **Acces**: `ssh hort-osona@hort` (via Tailscale) o be `ssh -J bernat@hortosona hort-osona@hort` (saltant per la RPi)
+- **Acces des del Windows**: `ssh hort-osona@hort` (via Tailscale)
+- **Acces des del Mac**: `ssh hort-osona@hort` (via Tailscale)
 
-## Maquinari
+## Maquinari del PC hort
 
 | Component | Valor |
 |---|---|
@@ -45,11 +50,11 @@ difficulty: beginner
 | Kernel | 6.19.14 |
 | RAM | 7,7 GB (lliure 5,7 GB) |
 | Disc | 448 GB total, 21 GB usat, 405 GB lliure |
-| Tailscale | 100.97.77.87 |
+| Tailscale IP | 100.97.77.87 |
 
 ## Els 3 contenidors del lab
 
-S'han vist tots 3 actius durant 14 hores seguides (des de 2026-08-06):
+Tots 3 actius des de fa 14+ hores:
 
 | Contenidor | Imatge | IP interna | Ports | Funcio |
 |---|---|---|---|---|
@@ -61,8 +66,8 @@ S'han vist tots 3 actius durant 14 hores seguides (des de 2026-08-06):
 
 Tots els contenidors estan a la xarxa Docker `cyberlab_lab-net` (10.10.30.0/24).
 
-```
-docker network inspect cyberlab_lab-net
+```bash
+docker network inspect cyberlab_lab-net --format "{{range .Containers}}{{.Name}}: {{.IPv4Address}}{{"\n"}}{{end}}"
 ```
 
 **Sortida esperada:**
@@ -74,45 +79,85 @@ dvwa: 10.10.30.10/24
 
 ## Tallafoc actiu (aillament real)
 
-Veiem regles actives al `iptables`:
+L'script `/usr/local/bin/isolate-lab.sh` aplica regles al `iptables` per tal que el lab **NO pugui accedir a la LAN ni a Internet**.
 
-| Cadena | Politica | Observacio |
-|---|---|---|
-| INPUT | ACCEPT | Permet tot (es un Kali personal) |
-| FORWARD | **DROP** | Tallafoc actiu! |
-| OUTPUT | ACCEPT | Permet tot |
+### Regles de la cadena DOCKER-USER
 
-**Regles Docker especifiques:**
+| Regla | Funcio |
+|---|---|
+| `DROP all -- 10.10.30.0/24 -> 192.168.1.0/24` | Bloquejar lab -> LAN |
+| `DROP all -- 10.10.30.0/24 ! -> 10.10.30.0/24` | Bloquejar lab -> Internet (nomes permet transit intern) |
 
+### Regles de la cadena raw (PREROUTING)
+
+| Regla | Funcio |
+|---|---|
+| `DROP -d 10.10.30.30 ! -i br-e3b7b7768083` | Bloquejar acces a Metasploitable des de fora del bridge |
+| `DROP -d 10.10.30.20 ! -i br-e3b7b7768083` | Bloquejar acces a Juice Shop des de fora del bridge |
+| `DROP -d 10.10.30.10 ! -i br-e3b7b7768083` | Bloquejar acces a DVWA des de fora del bridge |
+| `DROP -d 127.0.0.1:3000 ! -i lo` | Bloquejar acces al port 3000 si no ve del loopback |
+| `DROP -d 127.0.0.1:8080 ! -i lo` | Bloquejar acces al port 8080 si no ve del loopback |
+
+**Interpretacio**: nomes els contenidors Docker poden accedir als serveis del lab. La RPi, el Mac o qualsevol altre dispositiu del tailnet **NO** pot accedir-hi directament.
+
+## L'script isolate-lab.sh
+
+Contingut complet:
+
+```bash
+#!/bin/bash
+# Ailla la xarxa del lab (10.10.30.0/24) de la LAN i d'Internet
+# Nomes permet transit entre contenidors del lab
+
+# Netejar regles anteriors a DOCKER-USER
+sudo iptables -D DOCKER-USER -s 10.10.30.0/24 -d 192.168.1.0/24 -j DROP 2>/dev/null
+sudo iptables -D DOCKER-USER -s 10.10.30.0/24 ! -d 10.10.30.0/24 -j DROP 2>/dev/null
+
+# Bloquejar lab -> LAN
+sudo iptables -A DOCKER-USER -s 10.10.30.0/24 -d 192.168.1.0/24 -j DROP
+
+# Bloquejar lab -> Internet (permetre nomes transit intern del lab)
+sudo iptables -A DOCKER-USER -s 10.10.30.0/24 ! -d 10.10.30.0/24 -j DROP
+
+echo "Regles d'aillament aplicades"
+sudo iptables -L DOCKER-USER -n -v
 ```
-Chain DOCKER (2 references)
-target     prot opt source               destination
-ACCEPT     tcp  --  0.0.0.0/0            10.10.30.10          tcp dpt:80      # DVWA
-ACCEPT     tcp  --  0.0.0.0/0            10.10.30.20          tcp dpt:3000    # Juice Shop
-DROP       all  --  0.0.0.0/0            0.0.0.0/0
-DROP       all  --  0.0.0.0/0            0.0.0.0/0
-```
 
-**Interpretacio**: nomes es permet transit als ports 80 (DVWA) i 3000 (Juice Shop). La resta queda **bloquejada**.
+**Ubicacio**: `/usr/local/bin/isolate-lab.sh` (permisos `-rwx--x--x`)
 
-## Eines de Kali instal·lades (11+ trobades)
+## Eines de Kali instal·lades (16 trobades)
 
-| Eina | Path | Us |
-|---|---|---|
-| `nmap` | /usr/bin/nmap | Escaneig de xarxa i ports |
-| `nikto` | /usr/bin/nikto | Escaneig de vulnerabilitats web |
-| `sqlmap` | /usr/bin/sqlmap | SQL injection automatitzat |
-| `hydra` | /usr/bin/hydra | Brute force de contrasenyes |
-| `john` | /usr/sbin/john | Crackejador de hashes |
-| `hashcat` | /usr/bin/hashcat | Crackejador de hashes (GPU) |
-| `gobuster` | /usr/bin/gobuster | Bruteforce de directoris/fitxers |
-| `dirb` | /usr/bin/dirb | Bruteforce de directoris |
-| `wpscan` | /usr/bin/wpscan | Escaneig de WordPress |
-| `burpsuite` | /usr/bin/burpsuite | Proxy d'atac web |
-| `nuclei` | /usr/bin/nuclei | Escaneig automatitzat de vulnerabilitats |
-| `ffuf` | /usr/bin/ffuf | Fuzzing web rapid |
+| Eina | Us |
+|---|---|
+| `nmap` | Escaneig de xarxa i ports |
+| `nikto` | Escaneig de vulnerabilitats web |
+| `sqlmap` | SQL injection automatitzat |
+| `hydra` | Brute force de contrasenyes |
+| `john` | Crackejador de hashes |
+| `hashcat` | Crackejador de hashes (GPU) |
+| `gobuster` | Bruteforce de directoris/fitxers |
+| `dirb` | Bruteforce de directoris |
+| `wpscan` | Escaneig de WordPress |
+| `burpsuite` | Proxy d'atac web |
+| `nuclei` | Escaneig automatitzat de vulnerabilitats |
+| `ffuf` | Fuzzing web rapid |
+| `searchsploit` | Base de dades d'exploits |
+| `netcat` | Connexions TCP/UDP |
+| `wireshark` | Analisi de trafic de xarxa |
+| `tcpdump` | Captura de paquets |
 
 **Nota**: Falta `metasploit-framework` (no instal·lat). Es pot afegir amb `apt install metasploit-framework`.
+
+## Docker info
+
+| Camp | Valor |
+|---|---|
+| Server Version | 28.5.2+dfsg4 |
+| Storage Driver | overlay2 |
+| Containers | 3 |
+| Images | 4 |
+| Total imatges | 2.26 GB |
+| Total contenidors | 120.4 MB |
 
 ## Com accedir al lab
 
@@ -126,7 +171,6 @@ docker exec -it dvwa bash
 nmap -sV 10.10.30.30
 
 # Accedir a DVWA des del navegador
-# Port forwarding automatic per 127.0.0.1:8080
 firefox http://127.0.0.1:8080
 
 # Accedir a Juice Shop
@@ -136,7 +180,7 @@ firefox http://127.0.0.1:3000
 ### Des del Mac de casa
 
 ```bash
-# Túnel SSH per accedir a la web del DVWA
+# Tunel SSH per accedir a la web del DVWA
 ssh -L 8080:127.0.0.1:8080 hort-osona@hort
 
 # Ara al navegador del Mac:
@@ -156,33 +200,54 @@ ssh hort-osona@hort  # un cop dins
 
 ```powershell
 ssh hort-osona@hort
-# o amb password:
-ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no hort-osona@hort
+# Ara ja funciona sense password (clau nova sense passphrase)
 ```
 
 ## Validacio real feta (2026-08-07)
 
 Tots els punts d'aquest document han estat validats amb sortida real del sistema:
 
-- ✅ Contenidors actius (14h)
+- ✅ Contenidors actius (14+ hores)
 - ✅ Xarxa `cyberlab_lab-net` existent
 - ✅ IPs correctes (10.10.30.10, 20, 30)
 - ✅ Tallafoc actiu amb DROP a FORWARD
 - ✅ Regles ACCEPT nomes per DVWA:80 i Juice Shop:3000
-- ✅ 11+ eines de Kali instal·lades
+- ✅ 16 eines de Kali instal·lades
+- ✅ Acces SSH funcional des del Windows (despres de crear clau nova)
+
+## Problemes coneguts i solucions
+
+### El servei `isolate-lab.service` esta a /tmp/
+
+**Problema**: El fitxer de servei esta a `/tmp/isolate-lab.service` (no persistent). Si es reinicia el Kali, es perd.
+
+**Solucio propera**: Moure'l a `/etc/systemd/system/isolate-lab.service` i fer-lo persistent.
+
+### El fitxer `docker-compose.yml` no sha trobat
+
+**Problema**: Els contenidors s'han creat manualment amb `docker run`, no amb Docker Compose.
+
+**Solucio**: Crear un `docker-compose.yml` que documenti com aixecar el lab de zero.
+
+### Falta el tallafoc automatic al boot
+
+**Problema**: Si el Kali es reinicia, les regles d'iptables es perden.
+
+**Solucio**: Configurar un servei systemd que apliqui l'script al boot.
 
 ## Estat
 
 - **Validat per:** Hermes Agent (acces SSH al Kali)
 - **Data:** 2026-08-07
 - **Font:** Validacio directa via SSH al PC hort
-- **Propera revisio:** Quan es facin canvis al lab
+- **Propera revisio:** Despres de moure el servei a /etc/systemd/system/
 
 ## Pendents
 
-- [ ] Verificar que el servei `isolate-lab.service` existeix (no sha trobat a `/etc/systemd/system/`)
-- [ ] Crear scripts d'arrencada automatica del lab (`docker-compose.yml`)
-- [ ] Documentar el tallafoc `isolate-lab.sh`
+- [ ] Moure `isolate-lab.service` a `/etc/systemd/system/`
+- [ ] Crear `docker-compose.yml` per aixecar el lab de zero
+- [ ] Fer un script de backup de la configuracio
+- [ ] Documentar el tallafoc `isolate-lab.sh` (ja fet aqui)
 - [ ] Instal·lar `metasploit-framework` si es vol usar
 - [ ] Afegir un IDS (Snort o Suricata) per detectar atacs
 
