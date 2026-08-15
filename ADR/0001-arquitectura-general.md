@@ -1,8 +1,8 @@
 # ADR-0001 — Arquitectura general del CyberLab
 
-- **Estat:** acceptada (revisada 2026-07-28)
+- **Estat:** acceptada (revisada 2026-08-04)
 - **Data original:** 2026-07-28
-- **Última revisió:** 2026-07-28
+- **Última revisió:** 2026-08-04
 - **Decisors:** Bernat Mora + Hermes Agent
 - **Tags:** arquitectura, visio-global
 
@@ -12,7 +12,7 @@ L'objectiu és construir un laboratori personal de ciberseguretat que sigui **mo
 
 ## Consideracions
 
-- El **PC de l'hort** (HP Z1 G9 Tower, 32 GB RAM) és la màquina més potent — bona candidata per allotjar el cor del laboratori (hipervisor, màquines virtuals, Kali natiu).
+- El **PC de l'hort** (HP Z1 G9 Tower, 32 GB RAM) és la màquina més potent — bona candidata per allotjar el cor del laboratori (Windows 11 Pro, Hyper-V i màquines virtuals).
 - El **Mac vell de l'hort** (macOS 12.7.6) pot estar sempre connectat a l'hort — bona candidata per a serveis complementaris (Tailscale, scripts d'automatització, terminals d'accés).
 - El **Mac potent de casa** és el centre de control natural: des d'on es fan les pràctiques, es gestionen les eines, s'analitzen resultats.
 - El **MacBook Air** de casa queda com a **consola humana diària** (VS Code, navegador, SSH cap al lab).
@@ -40,7 +40,7 @@ L'objectiu és construir un laboratori personal de ciberseguretat que sigui **mo
 
 **Ubicació HORT** (sota Parlem 5G, CGNAT):
 
-- `cyber-host` (PC HP Z1 G9, 32 GB) → host principal. **Kali Linux natiu** + hipervisor per a màquines virtuals (Metasploitable, DVWA, màquines pròpies).
+- `cyber-host` (PC HP Z1 G9, 32 GB) → host principal amb **Windows 11 Pro**. Hyper-V allotja Kali, Ubuntu i víctimes aïllades; WSL2/Docker Desktop allotja eines i aplicacions quan sigui adequat.
 - `cyber-helper` (MacBook Pro 13" vell, macOS 12.7.6) → serveis complementaris a l'hort: Tailscale, scripts de monitoratge, terminal secundari.
 
 **Ubicació CASA**:
@@ -60,7 +60,7 @@ L'objectiu és construir un laboratori personal de ciberseguretat que sigui **mo
 ### Positives
 
 - Cada m pot fallar sense arrossegar la resta.
-- La Kali del PC de l'hort té 32 GB de RAM per a màquines virtuals.
+- El PC Windows de l'hort disposa de 32 GB de RAM per repartir entre Hyper-V, Kali i les altres màquines virtuals.
 - Des del Mac potent de casa tenim latència acceptable (~50 ms) al lab de l'hort via Tailscale.
 - Si Parlem cau, podem continuar treballant localment a casa.
 
@@ -81,7 +81,7 @@ L'objectiu és construir un laboratori personal de ciberseguretat que sigui **mo
 - Cadascun dels 5 equips pot fer ping a la resta via Tailscale.
 - Cada dispositiu té el seu nom al tailnet i resol per MagicDNS.
 - Les xarxes de laboratori (10.10.x) no són visibles des del tailnet.
-- Una VM de prova al PC de l'hort no pot accedir a la xarxa domèstica de casa sense regla explícita.
+- Kali i una víctima poden comunicar-se en un vSwitch privat, però la víctima no pot accedir a Internet, a la LAN ni al tailnet.
 - El Mac potent de casa pot obrir una sessió SSH al PC de l'hort via Tailscale en <100 ms.
 - L'iPhone pot fer SSH al PC de l'hort via Tailscale amb xifrat WireGuard.
 

@@ -2,9 +2,9 @@
 id: CAP-01-60
 title: "Ubicacions i desplegaments"
 status: published
-version: 1
+version: 1.1
 created: 2026-07-28
-updated: 2026-07-28
+updated: 2026-08-04
 authors:
   - Bernat Mora
   - Hermes Agent
@@ -37,7 +37,7 @@ l'**hort** que estava infrautilitzat, i un **Mac potent a casa** que és el
 centre de treball diari. L'objectiu és aprofitar-los tots dos per a
 finalitats diferents:
 
-- **L'hort** allotja les màquines virtuals, les eines ofensives i la Kali.
+- **L'hort** allotja el host Windows, Hyper-V, les màquines virtuals i una Kali virtual d'atac.
 - **Casa** allotja la consola de control, l'anàlisi, la documentació.
 
 Però cal resoldre el problema clàssic: com connectar dues xarxes separades
@@ -130,7 +130,7 @@ privada Tailscale):
 ```
 Internet ──┬─── Parlem 5G (CGNAT) ─────── Hort
            │       │
-           │       ├─── cyber-host      (Kali Linux, 32 GB)
+           │       ├─── cyber-host      (Windows + Hyper-V, 32 GB)
            │       └─── cyber-helper    (macOS 12, scripts)
            │
            └─── Router de casa ──────── Casa
@@ -147,7 +147,7 @@ Tots units per Tailscale (WireGuard, xifrat punta a punta).
 
 La instal·lació dels equips es documenta als capítols respectius:
 
-- [CAP-08-20](cap-08-20-kali-linux.md) — Kali Linux al PC de l'hort.
+- [CAP-08-20](cap-08-20-kali-linux.md) — Kali Linux com a VM a Hyper-V.
 - [CAP-03-30](cap-03-30-macos-essencial.md) — macOS (Mac potent, MBP vell).
 - [CAP-04-10](cap-04-10-tailscale.md) — Tailscale als 5 equips.
 - [CAP-04-30](cap-04-30-firewall.md) — tallafocs al PC de l'hort.
@@ -236,7 +236,7 @@ Més detalls a [CAP-06-20](cap-06-20-hermes.md).
 - **5 equips**: 2 a l'hort + 3 a casa + 1 pendent (futura `cyber-pi`).
 - **Units per Tailscale** sobre WireGuard.
 - **Cap port obert** a cap router.
-- **El PC de l'hort és el cor del lab** (Kali natiu + hipervisor).
+- **El PC de l'hort és el cor del lab** (Windows 11 Pro + Hyper-V + Kali virtual).
 - **El Mac potent de casa és el centre de control** (des d'on es fan les
   pràctiques).
 

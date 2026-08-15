@@ -1,8 +1,8 @@
 # ADR-0002 — Assignació de rols per equip
 
-- **Estat:** acceptada (revisada 2026-07-28)
+- **Estat:** acceptada (revisada 2026-08-04)
 - **Data original:** 2026-07-28
-- **Última revisió:** 2026-07-28
+- **Última revisió:** 2026-08-04
 - **Decisors:** Bernat Mora + Hermes Agent
 - **Tags:** rols, equip
 
@@ -28,7 +28,7 @@ Volem decidir quin equip fa què. No tots els dispositius serveixen per a tot, i
 
 | Rol | Equip | Motiu |
 |---|---|---|
-| Host principal (Kali + hipervisor) | `cyber-host` (PC HP Z1 G9) | 32 GB RAM per a VMs; Kali natiu; el cor del lab és aquí |
+| Host Windows + Hyper-V | `cyber-host` (PC HP Z1 G9) | 32 GB RAM per a VMs; Kali funciona com a VM d'atac; el cor del lab és aquí |
 | Servei complementari a l'hort | `cyber-helper` (MBP vell) | Tailscale, scripts, monitoratge local |
 
 ### Ubicació CASA

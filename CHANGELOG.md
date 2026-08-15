@@ -6,6 +6,15 @@ Adoptem el format de [Keep a Changelog](https://keepachangelog.com/) i
 
 ## [Unreleased]
 
+### Canviat
+- Arquitectura consolidada: Windows 11 Pro és el host de `cyber-host`, Hyper-V és l'hipervisor i Kali funciona com a VM d'atac.
+- Separació explícita entre documentació preparada i fases validades sobre maquinari real.
+- Validació automàtica de qualitat, scripts i patrons de secrets.
+
+### Corregit
+- Eliminada la contradicció entre Kali natiu i Hyper-V.
+- Eliminada la secció duplicada de `v0.0-bootstrap`.
+
 ### Afegit
 - **Integració del material antic de lab-seguretat** al llibre:
   - ADR-0001 i ADR-0002 revisats amb el context hort/casa real.
@@ -44,14 +53,6 @@ Adoptem el format de [Keep a Changelog](https://keepachangelog.com/) i
 - Plantilles `.example` per a xarxa, docker, VMs, hermes, secrets.
 - Scripts d'auditoria (Windows, macOS, RPi).
 - Documentació de la Fase 0 (auditoria).
-
-## [v0.0-bootstrap] - 2026-07-28
-
-### Afegit
-- Creació del repo `BernatMora/cyberlab-ai` a GitHub (públic).
-- Branca `main` (protegida) + branca `develop`.
-- Estructura de carpetes completa.
-- README arrel amb visió, arquitectura, llicència, polítiques.
 
 [Unreleased]: https://github.com/BernatMora/cyberlab-ai/compare/v0.0-bootstrap...HEAD
 [v0.0-bootstrap]: https://github.com/BernatMora/cyberlab-ai/releases/tag/v0.0-bootstrap

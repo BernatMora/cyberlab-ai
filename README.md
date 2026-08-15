@@ -4,7 +4,7 @@
 > Totes les pràctiques ofensives es limiten exclusivament a dispositius, VMs, contenidors i serveis propis.
 
 [![Repo](https://img.shields.io/badge/repo-BernatMora%2Fcyberlab--ai-181717?logo=github)](https://github.com/BernatMora/cyberlab-ai)
-[![Status](https://img.shields.io/badge/status-bootstrap-blue)](#estat-del-projecte)
+[![Status](https://img.shields.io/badge/status-fase%200%20pendent-orange)](#estat-del-projecte)
 [![License Docs](https://img.shields.io/badge/docs-CC%20BY--SA%204.0-lightgrey)](LICENSE-DOCS)
 [![License Code](https://img.shields.io/badge/code-MIT-green)](LICENSE-CODE)
 
@@ -27,7 +27,7 @@ L'objectiu no és només instal·lar eines, sinó construir una **plataforma est
 
 | Dispositiu | Ubicació | Nom al tailnet | Rol |
 |---|---|---|---|
-| PC HP Z1 G9 Tower (32 GB) | **Hort** | `cyber-host` | Host principal: Kali Linux natiu + hipervisor per a màquines virtuals |
+| PC HP Z1 G9 Tower (32 GB) | **Hort** | `cyber-host` | Host Windows 11 Pro: Hyper-V, WSL2/Docker Desktop i Kali com a VM d'atac |
 | MacBook Pro 13" vell | **Hort** | `cyber-helper` | Serveis complementaris a l'hort: Tailscale, scripts, monitoratge |
 | Mac potent | **Casa** | `cyber-brain` | Centre de control: VS Code, scripts, eines, futura Ollama |
 | MacBook Air 13" | **Casa** | `cyber-control` | Consola diària lleugera (sense serveis permanents) |
@@ -63,7 +63,9 @@ Més detalls a [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Estat del projecte
 
-Fase actual: **Fase 0 — Auditoria de maquinari** (pendent).
+Fase actual: **Fase 0 — Auditoria de maquinari** (pendent de validació real).
+
+> La documentació preparada, els ADR i els esquelets del llibre no impliquen que una fase estigui completada. Només es marca una fase com a feta quan s'han executat les comprovacions al maquinari real i s'ha registrat el resultat anonimitzat.
 
 ```
 [ ] Fase 0  Auditoria de maquinari
@@ -78,6 +80,7 @@ Fase actual: **Fase 0 — Auditoria de maquinari** (pendent).
 [ ] Fase 9  SIEM i defensa
 ```
 
+Estat operatiu resumit: [`PROJECT_STATUS.md`](PROJECT_STATUS.md).  
 Roadmap complet: [`docs/00-pla-director.md`](docs/00-pla-director.md) § 18.
 
 ## Estrutura del repositori
